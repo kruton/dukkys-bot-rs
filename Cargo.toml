@@ -1,0 +1,18 @@
+[package]
+name = "dukkys-bot-rs"
+version = "0.0.1"
+authors = ["Kenny Root <kenny@the-b.org>"]
+edition = "2018"
+
+[dependencies.serenity]
+default-features = false
+features = ["client", "gateway", "rustls_backend", "model", "cache"]
+version = "0.10"
+
+[dependencies.tokio]
+version = "1.0"
+features = ["macros", "rt-multi-thread"]
+
+[dependencies]
+chrono = "0.4"
+dotenv = "0.15"
