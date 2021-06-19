@@ -3,7 +3,20 @@ extern crate dotenv;
 use std::env;
 use dotenv::dotenv;
 
-use serenity::prelude::*;
+use serenity::{
+    async_trait,
+    model::gateway::Ready,
+    prelude::*
+};
+
+struct Handler;
+
+#[async_trait]
+impl EventHandler for Handler {
+    async fn ready(&self, _: Context, ready: Ready) {
+        println!("{} is connected!", ready.user.name);
+    }
+}
 
 #[tokio::main]
 async fn main() {
@@ -13,6 +26,7 @@ async fn main() {
         .expect("Expected TOKEN environment");
 
     let mut client = Client::builder(&token)
+        .event_handler(Handler)
         .await
         .expect("Error creating Discord client");
 
