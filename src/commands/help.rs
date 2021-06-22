@@ -1,21 +1,26 @@
 use serenity::{
-    prelude::*,
+    framework::standard::{macros::command, CommandResult},
     model::prelude::*,
-    framework::standard::{
-        CommandResult,
-        macros::command,
-    },
+    prelude::*,
     utils::MessageBuilder,
 };
 use std::collections::HashMap;
 
 #[command]
 async fn help(ctx: &Context, msg: &Message) -> CommandResult {
-    let guild_id = msg.guild_id.ok_or("Could not find Guild this message was sent on")?;
+    let guild_id = msg
+        .guild_id
+        .ok_or("Could not find Guild this message was sent on")?;
 
-    let channels = ctx.cache.guild_channels(guild_id).await.ok_or("Could not fetch channels")?;
-    let ticket_channel = get_channel_by_name(&channels, "ticket").ok_or("ticket channel not found")?;
-    let question_channel = get_channel_by_name(&channels, "questions").ok_or("questions channel not found")?;
+    let channels = ctx
+        .cache
+        .guild_channels(guild_id)
+        .await
+        .ok_or("Could not fetch channels")?;
+    let ticket_channel =
+        get_channel_by_name(&channels, "ticket").ok_or("ticket channel not found")?;
+    let question_channel =
+        get_channel_by_name(&channels, "questions").ok_or("questions channel not found")?;
 
     let response = MessageBuilder::new()
         .push("To be whitelisted on Dukky's SMP, just type, ")
@@ -35,13 +40,22 @@ async fn help(ctx: &Context, msg: &Message) -> CommandResult {
         .push(".")
         .build();
 
-        if let Err(why) = msg.channel_id.say(&ctx.http, &response).await {
-            println!("Erorr sending message: {:?}", why);
-        }
+    if let Err(why) = msg.channel_id.say(&ctx.http, &response).await {
+        println!("Erorr sending message: {:?}", why);
+    }
 
     Ok(())
 }
 
-fn get_channel_by_name(channels: &HashMap<ChannelId, GuildChannel>, name: &str) -> Option<ChannelId> {
-    channels.iter().find_map(|(key, val)| if val.name == name { Some(key.clone()) } else { None })
+fn get_channel_by_name(
+    channels: &HashMap<ChannelId, GuildChannel>,
+    name: &str,
+) -> Option<ChannelId> {
+    channels.iter().find_map(|(key, val)| {
+        if val.name == name {
+            Some(key.clone())
+        } else {
+            None
+        }
+    })
 }

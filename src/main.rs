@@ -2,17 +2,14 @@ mod commands;
 
 extern crate dotenv;
 
-use std::env;
 use dotenv::dotenv;
+use std::env;
 
 use serenity::{
     async_trait,
-    framework::{
-        StandardFramework,
-        standard::macros::group,
-    },
+    framework::{standard::macros::group, StandardFramework},
     model::gateway::Ready,
-    prelude::*
+    prelude::*,
 };
 
 use commands::help::*;
@@ -34,8 +31,7 @@ struct General;
 async fn main() {
     dotenv().ok();
 
-    let token = env::var("TOKEN")
-        .expect("Expected TOKEN environment");
+    let token = env::var("TOKEN").expect("Expected TOKEN environment");
 
     let framework = StandardFramework::new()
         .configure(|c| c.prefix("-"))
