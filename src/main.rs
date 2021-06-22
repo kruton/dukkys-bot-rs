@@ -13,8 +13,8 @@ use serenity::{
     prelude::*,
 };
 use std::env;
-use tracing::{error, info, instrument};
 use tracing::Level;
+use tracing::{error, info, instrument};
 
 use commands::help::*;
 
@@ -45,9 +45,7 @@ async fn before(_: &Context, msg: &Message, command_name: &str) -> bool {
 #[tokio::main]
 #[instrument]
 async fn main() {
-    tracing_subscriber::fmt()
-        .with_max_level(Level::INFO)
-        .init();
+    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
     dotenv().ok();
 

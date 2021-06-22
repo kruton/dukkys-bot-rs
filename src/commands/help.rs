@@ -5,22 +5,27 @@ use serenity::{
     utils::MessageBuilder,
 };
 use std::collections::HashMap;
+use tracing::error;
 
 #[command]
 async fn help(ctx: &Context, msg: &Message) -> CommandResult {
-    let guild_id = msg
-        .guild_id
-        .ok_or("Could not find Guild this message was sent on")?;
+    let guild_id = msg.guild_id.ok_or_else(|| {
+        error!("Could not find Guild this message was sent on");
+        "no guild"
+    })?;
 
-    let channels = ctx
-        .cache
-        .guild_channels(guild_id)
-        .await
-        .ok_or("Could not fetch channels")?;
-    let ticket_channel =
-        get_channel_by_name(&channels, "ticket").ok_or("ticket channel not found")?;
-    let question_channel =
-        get_channel_by_name(&channels, "questions").ok_or("questions channel not found")?;
+    let channels = ctx.cache.guild_channels(guild_id).await.ok_or_else(|| {
+        error!("Could not fetch channels");
+        "no channels"
+    })?;
+    let ticket_channel = get_channel_by_name(&channels, "ticket").ok_or_else(|| {
+        error!("#ticket channel not found");
+        "no #ticket"
+    })?;
+    let question_channel = get_channel_by_name(&channels, "questions").ok_or_else(|| {
+        error!("#questions channel not found");
+        "no #questions"
+    })?;
 
     let response = MessageBuilder::new()
         .push("To be whitelisted on Dukky's SMP, just type, ")
@@ -41,7 +46,7 @@ async fn help(ctx: &Context, msg: &Message) -> CommandResult {
         .build();
 
     if let Err(why) = msg.channel_id.say(&ctx.http, &response).await {
-        println!("Erorr sending message: {:?}", why);
+        error!("Erorr sending message: {:?}", why);
     }
 
     Ok(())
