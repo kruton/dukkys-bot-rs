@@ -4,6 +4,11 @@ version = "0.0.1"
 authors = ["Kenny Root <kenny@the-b.org>"]
 edition = "2018"
 
+[profile.release]
+opt-level = 'z'  # Optimize for size.
+lto = true
+codegen-units = 1
+
 [dependencies.serenity]
 default-features = false
 features = ["client", "framework", "standard_framework", "gateway", "rustls_backend", "model", "cache"]
