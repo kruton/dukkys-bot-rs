@@ -1,6 +1,5 @@
 mod commands;
-
-extern crate dotenv;
+mod util;
 
 use dotenv::dotenv;
 use serenity::{
