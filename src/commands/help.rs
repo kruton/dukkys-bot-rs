@@ -4,28 +4,22 @@ use serenity::{
     prelude::*,
     utils::MessageBuilder,
 };
-use std::collections::HashMap;
 use tracing::error;
 
 #[command]
 async fn help(ctx: &Context, msg: &Message) -> CommandResult {
-    let guild_id = msg.guild_id.ok_or_else(|| {
-        error!("Could not find Guild this message was sent on");
-        "no guild"
-    })?;
-
-    let channels = ctx.cache.guild_channels(guild_id).await.ok_or_else(|| {
-        error!("Could not fetch channels");
-        "no channels"
-    })?;
-    let ticket_channel = get_channel_by_name(&channels, "ticket").ok_or_else(|| {
-        error!("#ticket channel not found");
-        "no #ticket"
-    })?;
-    let question_channel = get_channel_by_name(&channels, "questions").ok_or_else(|| {
-        error!("#questions channel not found");
-        "no #questions"
-    })?;
+    let ticket_channel = get_channel_by_name(ctx, msg.guild_id, "ticket")
+        .await
+        .ok_or_else(|| {
+            error!("#ticket channel not found");
+            "no #ticket"
+        })?;
+    let question_channel = get_channel_by_name(ctx, msg.guild_id, "questions")
+        .await
+        .ok_or_else(|| {
+            error!("#questions channel not found");
+            "no #questions"
+        })?;
 
     let response = MessageBuilder::new()
         .push("To be whitelisted on Dukky's SMP, just type, ")
@@ -52,10 +46,19 @@ async fn help(ctx: &Context, msg: &Message) -> CommandResult {
     Ok(())
 }
 
-fn get_channel_by_name(
-    channels: &HashMap<ChannelId, GuildChannel>,
+async fn get_channel_by_name(
+    ctx: &Context,
+    guild_id: Option<GuildId>,
     name: &str,
 ) -> Option<ChannelId> {
+    let guild_id = guild_id.expect("Guild ID should not be empty");
+
+    let channels = ctx
+        .cache
+        .guild_channels(guild_id)
+        .await
+        .expect("Channels are not cached");
+
     channels.iter().find_map(|(key, val)| {
         if val.name == name {
             Some(key.clone())
