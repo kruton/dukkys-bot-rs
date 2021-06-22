@@ -3,14 +3,18 @@ mod commands;
 extern crate dotenv;
 
 use dotenv::dotenv;
-use std::env;
-
 use serenity::{
     async_trait,
-    framework::{standard::macros::group, StandardFramework},
-    model::gateway::Ready,
+    framework::{
+        standard::macros::{group, hook},
+        StandardFramework,
+    },
+    model::{channel::Message, gateway::Ready},
     prelude::*,
 };
+use std::env;
+use tracing::{error, info, instrument};
+use tracing::Level;
 
 use commands::help::*;
 
@@ -19,7 +23,7 @@ struct Handler;
 #[async_trait]
 impl EventHandler for Handler {
     async fn ready(&self, _: Context, ready: Ready) {
-        println!("{} is connected!", ready.user.name);
+        info!("{} is connected!", ready.user.name);
     }
 }
 
@@ -27,14 +31,31 @@ impl EventHandler for Handler {
 #[commands(help)]
 struct General;
 
+#[hook]
+#[instrument]
+async fn before(_: &Context, msg: &Message, command_name: &str) -> bool {
+    info!(
+        "Got command '{}' by user '{}'",
+        command_name, msg.author.name
+    );
+
+    true
+}
+
 #[tokio::main]
+#[instrument]
 async fn main() {
+    tracing_subscriber::fmt()
+        .with_max_level(Level::INFO)
+        .init();
+
     dotenv().ok();
 
     let token = env::var("TOKEN").expect("Expected TOKEN environment");
 
     let framework = StandardFramework::new()
         .configure(|c| c.prefix("-"))
+        .before(before)
         .group(&GENERAL_GROUP);
 
     let mut client = Client::builder(&token)
@@ -53,6 +74,6 @@ async fn main() {
     });
 
     if let Err(why) = client.start().await {
-        eprintln!("Client error: {:?}", why);
+        error!("Client error: {:?}", why);
     }
 }
