@@ -4,6 +4,10 @@ version = "0.0.1"
 authors = ["Kenny Root <kenny@the-b.org>"]
 edition = "2018"
 
+[[bin]]
+name = "dukkys-bot-rs"
+path = "src/main.rs"
+
 [profile.release]
 opt-level = 'z'  # Optimize for size.
 lto = true
