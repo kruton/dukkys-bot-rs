@@ -1,5 +1,4 @@
 mod commands;
-mod util;
 
 use dotenv::dotenv;
 use serenity::{
