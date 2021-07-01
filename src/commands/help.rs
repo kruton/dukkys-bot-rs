@@ -9,15 +9,11 @@ use tracing::error;
 #[command]
 async fn help(ctx: &Context, msg: &Message) -> CommandResult {
     if let Ok(guild) = msg.guild_id.unwrap().to_partial_guild(&ctx).await {
-        let channels = guild.channels(&ctx)
-            .await
-            .unwrap();
-        
-        let channel_ticket = channels.values()
-            .find(|c| c.name == "ticket").unwrap();
+        let channels = guild.channels(&ctx).await.unwrap();
 
-        let channel_question = channels.values()
-            .find(|c| c.name == "questions").unwrap();
+        let channel_ticket = channels.values().find(|c| c.name == "ticket").unwrap();
+
+        let channel_question = channels.values().find(|c| c.name == "questions").unwrap();
 
         let response = MessageBuilder::new()
             .push("To be whitelisted on Dukky's SMP, just type, ")
@@ -38,7 +34,7 @@ async fn help(ctx: &Context, msg: &Message) -> CommandResult {
             .build();
 
         if let Err(why) = msg.channel_id.say(&ctx.http, &response).await {
-            error!("Erorr sending message: {:?}", why);
+            error!("Error sending message: {:?}", why);
         }
     };
 

@@ -27,7 +27,7 @@ impl EventHandler for Handler {
 }
 
 #[group]
-#[commands(help,request)]
+#[commands(help, request)]
 struct General;
 
 #[hook]
