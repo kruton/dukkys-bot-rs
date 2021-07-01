@@ -15,6 +15,7 @@ use tracing::Level;
 use tracing::{error, info, instrument};
 
 use commands::help::*;
+use commands::request::*;
 
 struct Handler;
 
@@ -26,7 +27,7 @@ impl EventHandler for Handler {
 }
 
 #[group]
-#[commands(help)]
+#[commands(help,request)]
 struct General;
 
 #[hook]
