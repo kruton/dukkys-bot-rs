@@ -6,7 +6,6 @@ use serenity::{
 };
 use std::time::Duration;
 use tokio::time::sleep;
-use tracing::error;
 
 #[command]
 async fn request(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
@@ -19,29 +18,25 @@ async fn request(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
                 .channel(channel_join_here)
                 .build();
 
-            match msg.reply(ctx, reply).await {
-                Ok(reply) => {
-                    let ctx1 = ctx.clone();
-                    tokio::spawn(async move {
-                        sleep(Duration::from_secs(10)).await;
-                        reply.delete(ctx1).await
-                    });
-                }
-                _ => (),
+            if let Ok(reply) = msg.reply(ctx, reply).await {
+                let ctx1 = ctx.clone();
+                tokio::spawn(async move {
+                    sleep(Duration::from_secs(10)).await;
+                    reply.delete(ctx1).await
+                });
             }
             return Ok(());
         }
 
-        let minecraft_name = match args.single_quoted::<String>() {
-            Ok(x) => x,
-            Err(_) => {
-                msg.reply(
-                    ctx,
-                    "Please give your Minecraft Username after the command.",
-                )
-                .await?;
-                return Ok(());
-            }
+        let minecraft_name = if let Ok(name) = args.single_quoted::<String>() {
+            name
+        } else {
+            msg.reply(
+                ctx,
+                "Please give your Minecraft Username after the command.",
+            )
+            .await?;
+            return Ok(());
         };
 
         let channel_smp_requests = guild
