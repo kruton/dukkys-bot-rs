@@ -5,8 +5,10 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    assignees: kruton
       
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+    assignees: kruton
