@@ -7,9 +7,14 @@ use serenity::{
         standard::macros::{group, hook},
         StandardFramework,
     },
-    model::{channel::Message, gateway::Ready},
+    model::{
+        channel::Message,
+        gateway::{Activity, Ready},
+        user::OnlineStatus,
+    },
     prelude::*,
 };
+
 use std::env;
 use tracing::Level;
 use tracing::{error, info, instrument};
@@ -21,8 +26,13 @@ struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
-    async fn ready(&self, _: Context, ready: Ready) {
+    async fn ready(&self, ctx: Context, ready: Ready) {
         info!("{} is connected!", ready.user.name);
+
+        let game = Activity::listening("-help");
+        let status = OnlineStatus::Online;
+
+        ctx.set_presence(Some(game), status).await;
     }
 }
 
