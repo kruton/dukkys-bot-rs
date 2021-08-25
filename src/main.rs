@@ -34,6 +34,14 @@ impl EventHandler for Handler {
 
         ctx.set_presence(Some(game), status).await;
     }
+
+    async fn message(&self, ctx: Context, msg: Message) {
+        if msg.is_private() && msg.author.id != ctx.cache.current_user_id().await {
+            if let Err(why) = msg.reply(&ctx, "Please write me in a channel!").await {
+                error!("Could not reply: {:?}", why);
+            }
+        }
+    }
 }
 
 #[group]
@@ -48,6 +56,11 @@ async fn before(_: &Context, msg: &Message, command_name: &str) -> bool {
         command_name, msg.author.name
     );
 
+    // We do not support private messages.
+    if msg.is_private() {
+        return false;
+    }
+
     true
 }
 
@@ -61,7 +74,17 @@ async fn main() {
     let token = env::var("TOKEN").expect("Expected TOKEN environment");
 
     let framework = StandardFramework::new()
-        .configure(|c| c.prefix("-"))
+        .configure(|c| {
+            c.prefix("-").dynamic_prefix(|_, msg| {
+                Box::pin(async move {
+                    if msg.is_private() {
+                        Some("".to_string())
+                    } else {
+                        None
+                    }
+                })
+            })
+        })
         .before(before)
         .group(&GENERAL_GROUP);
 
