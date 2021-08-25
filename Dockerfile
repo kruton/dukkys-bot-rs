@@ -31,6 +31,7 @@ RUN find /home/dukkys-bot-rs/ -name dukkys-bot-rs
 
 # Copy the statically-linked binary into a scratch container.
 FROM scratch
+LABEL org.opencontainers.image.source https://github.com/kruton/dukkys-bot-rs
 COPY --from=build /home/dukkys-bot-rs/target/x86_64-unknown-linux-musl/release/dukkys-bot-rs .
 USER 1000
 ENTRYPOINT ["./dukkys-bot-rs"]
