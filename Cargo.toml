@@ -19,7 +19,7 @@ features = ["client", "framework", "standard_framework", "gateway", "rustls_back
 version = "0.10"
 
 [dependencies.tokio]
-version = "1.10.1"
+version = "1.11.0"
 features = ["macros", "signal", "rt-multi-thread"]
 
 [dependencies]
