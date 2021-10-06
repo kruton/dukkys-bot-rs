@@ -26,4 +26,4 @@ features = ["macros", "signal", "rt-multi-thread"]
 chrono = "0.4"
 dotenv = "0.15"
 tracing = "0.1.29"
-tracing-subscriber = "0.2.24"
+tracing-subscriber = "0.2.25"
