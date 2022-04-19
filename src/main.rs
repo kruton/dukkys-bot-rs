@@ -36,7 +36,7 @@ impl EventHandler for Handler {
     }
 
     async fn message(&self, ctx: Context, msg: Message) {
-        if msg.is_private() && msg.author.id != ctx.cache.current_user_id().await {
+        if msg.is_private() && msg.author.id != ctx.cache.current_user_id() {
             if let Err(why) = msg.reply(&ctx, "Please write me in a channel!").await {
                 error!("Could not reply: {:?}", why);
             }
@@ -88,7 +88,7 @@ async fn main() {
         .before(before)
         .group(&GENERAL_GROUP);
 
-    let mut client = Client::builder(&token)
+    let mut client = Client::builder(&token, GatewayIntents::default())
         .framework(framework)
         .event_handler(Handler)
         .await
