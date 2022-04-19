@@ -10,7 +10,7 @@ use tokio::time::sleep;
 #[command]
 async fn request(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     if let Ok(guild) = msg.guild_id.unwrap().to_partial_guild(&ctx).await {
-        let channel_join_here = guild.channel_id_from_name(ctx, "join-here").await.unwrap();
+        let channel_join_here = guild.channel_id_from_name(ctx, "join-here").unwrap();
 
         if msg.channel_id != channel_join_here {
             let reply = MessageBuilder::new()
@@ -41,7 +41,6 @@ async fn request(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
 
         let channel_smp_requests = guild
             .channel_id_from_name(ctx, "smp-requests")
-            .await
             .unwrap();
 
         let role_smper = guild.role_by_name("SMPer").unwrap();
